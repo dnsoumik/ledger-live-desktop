@@ -136,7 +136,11 @@ const OperationD: React$ComponentType<Props> = (props: Props) => {
   const { extra, hash, date, senders, type, fee, recipients: _recipients } = operation;
   const recipients = _recipients.filter(Boolean);
   const { name } = mainAccount;
-  const { status, metadata } = useNftMetadata(operation.contract, operation.tokenId);
+  const { status, metadata } = useNftMetadata(
+    operation.contract,
+    operation.tokenId,
+    operation.currency.id,
+  );
   const isNftOperation = ["NFT_IN", "NFT_OUT"].includes(operation.type);
   const show = useMemo(() => status === "loading", [status]);
 

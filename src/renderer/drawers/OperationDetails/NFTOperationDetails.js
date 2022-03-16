@@ -20,7 +20,11 @@ import { centerEllipsis } from "~/renderer/styles/helpers";
 
 const NFTOperationDetails = ({ operation }: { operation: Operation }) => {
   const { t } = useTranslation();
-  const { status, metadata } = useNftMetadata(operation.contract, operation.tokenId);
+  const { status, metadata } = useNftMetadata(
+    operation.contract,
+    operation.tokenId,
+    operation.currency.id,
+  );
   const show = useMemo(() => status === "loading", [status]);
 
   return operation.contract && operation.tokenId ? (

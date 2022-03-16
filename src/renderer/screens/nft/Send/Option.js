@@ -2,6 +2,7 @@
 import React, { useMemo } from "react";
 import { BigNumber } from "bignumber.js";
 import { useNftMetadata } from "@ledgerhq/live-common/lib/nft/NftMetadataProvider";
+import type { CryptoCurrency } from "@ledgerhq/live-common/lib/types";
 import { centerEllipsis } from "~/renderer/styles/helpers";
 import Text from "~/renderer/components/Text";
 import Box from "~/renderer/components/Box";
@@ -12,18 +13,14 @@ type OptionProps = {
   data: {
     tokenId: string,
     amount: BigNumber,
-    collection: { contract: string, standard: string },
+    contract: string,
+    standard: string,
+    currencyId: string,
   },
 };
 
-const Option = ({
-  data: {
-    tokenId,
-    amount,
-    collection: { contract, standard },
-  },
-}: OptionProps) => {
-  const { status, metadata } = useNftMetadata(contract, tokenId);
+const Option = ({ data: { tokenId, amount, contract, standard, currencyId } }: OptionProps) => {
+  const { status, metadata } = useNftMetadata(contract, tokenId, currencyId);
   const show = useMemo(() => status === "loading", [status]);
   return (
     <Box horizontal>
@@ -55,4 +52,5 @@ const Option = ({
   );
 };
 
+// $FlowFixMe
 export default Option;

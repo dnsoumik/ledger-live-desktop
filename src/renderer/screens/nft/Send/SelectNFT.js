@@ -19,10 +19,7 @@ const SelectNFT = ({
   const getOptionValue = useCallback(item => item, []);
 
   const filteredNFTs = useMemo(
-    () =>
-      maybeNFTCollection
-        ? nfts.filter(nft => nft.collection.contract === maybeNFTCollection)
-        : nfts,
+    () => (maybeNFTCollection ? nfts.filter(nft => nft.contract === maybeNFTCollection) : nfts),
     [nfts, maybeNFTCollection],
   );
 

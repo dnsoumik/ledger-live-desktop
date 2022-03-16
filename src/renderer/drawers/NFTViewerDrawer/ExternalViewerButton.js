@@ -1,6 +1,6 @@
 // @flow
 
-import React from "react";
+import React, { useMemo, memo } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
@@ -47,42 +47,82 @@ type ExternalViewerButtonProps = {
   links: $PropertyType<$PropertyType<NFTMetadataResponse, "result">, "links">,
   contract: string,
   tokenId: string,
+  currencyId: string,
 };
 
-export const ExternalViewerButton = ({ links, contract, tokenId }: ExternalViewerButtonProps) => {
+const currencyKeysMap = {
+  ethereum: (t, links) =>
+    [
+      links?.opensea && {
+        key: "opensea",
+        label: t("NFT.viewer.actions.open", { viewer: "Opensea.io" }),
+        icon: <IconOpensea size={16} />,
+        type: "external",
+        callback: () => openURL(links.opensea),
+      },
+      links?.rarible && {
+        key: "rarible",
+        label: t("NFT.viewer.actions.open", { viewer: "Rarible" }),
+        icon: <IconRarible size={16} />,
+        type: "external",
+        callback: () => openURL(links.rarible),
+      },
+      {
+        key: "sep2",
+        type: "separator",
+        label: "",
+      },
+      links?.etherscan && {
+        key: "etherscan",
+        label: t("NFT.viewer.actions.open", { viewer: "Explorer" }),
+        icon: <IconGlobe size={16} />,
+        type: "external",
+        callback: () => openURL(links.etherscan),
+      },
+    ].filter(x => x),
+  polygon: (t, links) =>
+    [
+      links?.opensea && {
+        key: "opensea",
+        label: t("NFT.viewer.actions.open", { viewer: "Opensea.io" }),
+        icon: <IconOpensea size={16} />,
+        type: "external",
+        callback: () => openURL(links.opensea),
+      },
+      links?.rarible && {
+        key: "rarible",
+        label: t("NFT.viewer.actions.open", { viewer: "Rarible" }),
+        icon: <IconRarible size={16} />,
+        type: "external",
+        callback: () => openURL(links.rarible),
+      },
+      {
+        key: "sep2",
+        type: "separator",
+        label: "",
+      },
+      links?.polygonscan && {
+        key: "polygonscan",
+        label: t("NFT.viewer.actions.open", { viewer: "Explorer" }),
+        icon: <IconGlobe size={16} />,
+        type: "external",
+        callback: () => openURL(links.polygonscan),
+      },
+    ].filter(x => x),
+};
+
+const ExternalViewerButton = ({
+  links,
+  contract,
+  tokenId,
+  currencyId,
+}: ExternalViewerButtonProps) => {
   const { t } = useTranslation();
 
-  const defaultLinks = {
-    openSea: `https://opensea.io/assets/${contract}/${tokenId}`,
-    rarible: `https://rarible.com/token/${contract}:${tokenId}`,
-    etherscan: `https://etherscan.io/token/${contract}?a=${tokenId}`,
-  };
-
-  const items: DropDownItemType[] = [
-    {
-      key: "opensea",
-      label: t("NFT.viewer.actions.open", { viewer: "Opensea.io" }),
-      icon: <IconOpensea size={16} />,
-      onClick: () => openURL(links?.opensea || defaultLinks.openSea),
-    },
-    {
-      key: "rarible",
-      label: t("NFT.viewer.actions.open", { viewer: "Rarible" }),
-      icon: <IconRarible size={16} />,
-      onClick: () => openURL(links?.rarible || defaultLinks.rarible),
-    },
-    {
-      key: "sep2",
-      type: "separator",
-      label: "",
-    },
-    {
-      key: "etherscan",
-      label: t("NFT.viewer.actions.open", { viewer: "Explorer" }),
-      icon: <IconGlobe size={16} />,
-      onClick: () => openURL(links?.etherscan || defaultLinks.etherscan),
-    },
-  ];
+  const items: DropDownItemType[] = useMemo(
+    () => (currencyKeysMap?.[currencyId] ? currencyKeysMap[currencyId](t, links) : []),
+    [currencyId, links, t],
+  );
 
   const renderItem = ({ item }: { item: ItemType }) => {
     if (item.type === "separator") {
@@ -125,3 +165,6 @@ export const ExternalViewerButton = ({ links, contract, tokenId }: ExternalViewe
     </DropDownSelector>
   );
 };
+
+// $FlowFixMe
+export default memo(ExternalViewerButton);
